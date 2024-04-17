@@ -15,11 +15,17 @@ Content-Type: application/json; charset=UTF-8
 
 ###
 
-#Create
+#Create invalid
 POST {{WebApi_HostAddress}}/documents
 Content-Type: application/json; charset=UTF-8
 
 {
+    "id": "some-unique-identifier2",
+    "tags": ["important", ".net"],
+    "xdata": {
+        "some": "data",
+        "optional": "fields"
+    }
 }
 
 ###
@@ -43,7 +49,7 @@ Accept: application/xml
 ###
 
 #Not Found
-GET {{WebApi_HostAddress}}/documents/some-unique-identifier1
-Accept: application/xml
+GET {{WebApi_HostAddress}}/documents/xxx
+Accept: application/json
 
 ###

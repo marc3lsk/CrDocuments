@@ -1,5 +1,4 @@
 using MessagePack.AspNetCoreMvcFormatter;
-using WebApi.Features.Documents.ResponseFormatters;
 using Serilog;
 
 var builder = WebApplication.CreateSlimBuilder(args);
@@ -18,8 +17,6 @@ builder.Services.AddControllers(options =>
     .AddXmlDataContractSerializerFormatters();
 
 var app = builder.Build();
-
-app.Use(async (context, next) => { context.Request.EnableBuffering(); await next(); });
 
 app.UseSerilogRequestLogging();
 
