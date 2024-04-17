@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Formatters\ContactXmlOutputFormatter.txt" />
+    <None Remove="Formatters\MessagePackOutputFormatter.txt" />
+    <None Remove="Formatters\VcardOutputFormatter.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Formatters\ContactXmlOutputFormatter.txt" />
+    <Compile Include="Formatters\MessagePackOutputFormatter.txt" />
+    <Compile Include="Formatters\VcardOutputFormatter.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MessagePack" Version="2.5.140" />
+    <PackageReference Include="MessagePack.AspNetCoreMvcFormatter" Version="2.5.140" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+</Project>

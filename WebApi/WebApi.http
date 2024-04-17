@@ -1,0 +1,16 @@
+@WebApi_HostAddress = http://localhost:5164
+
+GET {{WebApi_HostAddress}}/documents
+Accept: application/x-msgpack
+
+###
+
+GET {{WebApi_HostAddress}}/documents
+Accept: application/json
+
+###
+
+GET {{WebApi_HostAddress}}/documents
+Accept: application/xml
+
+###
