@@ -1,11 +1,10 @@
 using MessagePack.AspNetCoreMvcFormatter;
-using WebApi.Formatters;
+using WebApi.Features.Documents.ResponseFormatters;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
 builder.Services.AddControllers(options =>
 {
-    options.RespectBrowserAcceptHeader = true;
     options.OutputFormatters.Add(new MessagePackOutputFormatter());
     options.OutputFormatters.Add(new DocumentXmlOutputFormatter());
 })

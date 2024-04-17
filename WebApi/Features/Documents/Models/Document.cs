@@ -1,6 +1,6 @@
 ﻿using MessagePack;
 
-namespace WebApi.Models;
+namespace WebApi.Features.Documents.Models;
 
 [MessagePackObject(keyAsPropertyName: true)]
 public record Document(string id, string[] tags, dynamic? data);

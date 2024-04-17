@@ -3,9 +3,9 @@ using System.Xml;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
-using WebApi.Models;
+using WebApi.Features.Documents.Models;
 
-namespace WebApi.Formatters;
+namespace WebApi.Features.Documents.ResponseFormatters;
 
 public class DocumentXmlOutputFormatter : TextOutputFormatter
 {
@@ -25,9 +25,9 @@ public class DocumentXmlOutputFormatter : TextOutputFormatter
     {
         var response = context.HttpContext.Response;
 
-        XmlDocument doc = JsonConvert.DeserializeXmlNode(JsonConvert.SerializeObject(context.Object), deserializeRootElementName: "document");
+        XmlDocument? doc = JsonConvert.DeserializeXmlNode(JsonConvert.SerializeObject(context.Object!), deserializeRootElementName: "document");
 
         response.ContentType = "application/xml";
-        await response.Body.WriteAsync(System.Text.UTF8Encoding.UTF8.GetBytes(doc.OuterXml));
+        await response.Body.WriteAsync(Encoding.UTF8.GetBytes(doc!.OuterXml));
     }
 }
