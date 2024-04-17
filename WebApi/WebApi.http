@@ -1,16 +1,49 @@
 @WebApi_HostAddress = http://localhost:5164
 
-GET {{WebApi_HostAddress}}/documents
-Accept: application/x-msgpack
+#Create
+POST {{WebApi_HostAddress}}/documents
+Content-Type: application/json; charset=UTF-8
+
+{
+    "id": "some-unique-identifier1",
+    "tags": ["important", ".net"],
+    "data": {
+        "some": "data",
+        "optional": "fields"
+    }
+}
 
 ###
 
-GET {{WebApi_HostAddress}}/documents
+#Create
+POST {{WebApi_HostAddress}}/documents
+Content-Type: application/json; charset=UTF-8
+
+{
+}
+
+###
+
+#Get JSON
+GET {{WebApi_HostAddress}}/documents/some-unique-identifier1
 Accept: application/json
 
 ###
 
-GET {{WebApi_HostAddress}}/documents
+#Get MsgPack
+GET {{WebApi_HostAddress}}/documents/some-unique-identifier1
+Accept: application/x-msgpack
+
+###
+
+#Get XML
+GET {{WebApi_HostAddress}}/documents/some-unique-identifier1
+Accept: application/xml
+
+###
+
+#Not Found
+GET {{WebApi_HostAddress}}/documents/some-unique-identifier1
 Accept: application/xml
 
 ###

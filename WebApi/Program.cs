@@ -12,12 +12,14 @@ builder.Host.UseSerilog((context, config) =>
 builder.Services.AddControllers(options =>
 {
     options.OutputFormatters.Add(new MessagePackOutputFormatter());
-    options.OutputFormatters.Add(new DocumentXmlOutputFormatter());
+    //options.OutputFormatters.Add(new DocumentXmlOutputFormatter());
 })
     .AddXmlSerializerFormatters()
     .AddXmlDataContractSerializerFormatters();
 
 var app = builder.Build();
+
+app.Use(async (context, next) => { context.Request.EnableBuffering(); await next(); });
 
 app.UseSerilogRequestLogging();
 
