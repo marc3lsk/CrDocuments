@@ -30,6 +30,21 @@ Content-Type: application/json; charset=UTF-8
 
 ###
 
+#Update
+PUT {{WebApi_HostAddress}}/documents
+Content-Type: application/json; charset=UTF-8
+
+{
+    "id": "some-unique-identifier1",
+    "tags": ["important", ".net", "cool"],
+    "data": {
+        "some": "data",
+        "optional": "fields"
+    }
+}
+
+###
+
 #Get JSON
 GET {{WebApi_HostAddress}}/documents/some-unique-identifier1
 Accept: application/json

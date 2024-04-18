@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Schema.Generation;
-using System.Collections.Concurrent;
 using System.Xml;
 using WebApi.Features.Documents.Models;
+using WebApi.Features.Documents.Persistence;
 
 namespace WebApi.Features.Documents.Controllers;
 
@@ -13,31 +13,37 @@ namespace WebApi.Features.Documents.Controllers;
 [Route("[controller]")]
 public class DocumentsController : ControllerBase
 {
-    static ConcurrentDictionary<string, DocumentEnvelope> _documents = new();
+    IDocumentRepository _documentRepository;
+
+    public DocumentsController(
+        IDocumentRepository documentRepository
+    )
+    {
+        _documentRepository = documentRepository;
+    }
 
     [HttpGet]
     [Route("{id}")]
-    public IActionResult Get(string id)
+    public async Task<IActionResult> Get(string id)
     {
-        if (_documents.TryGetValue(id, out var documentEnvelope))
-        {
-            if (Request.Headers.Accept.Contains("application/x-msgpack"))
-            {
-                return Ok(MessagePackSerializer.ConvertFromJson(documentEnvelope.JsonDocument));
-            }
-            if (Request.Headers.Accept.Contains("application/xml"))
-            {
-                XmlDocument? doc = JsonConvert.DeserializeXmlNode(documentEnvelope.JsonDocument, deserializeRootElementName: "document");
-                return Ok(doc);
-            }
-            return Ok(documentEnvelope.Document);
-        }
+        var documentEnvelope = await _documentRepository.GetDocument(id);
 
-        return NotFound();
+        if (documentEnvelope is null)
+            return NotFound();
+
+        if (Request.Headers.Accept.Contains("application/x-msgpack"))
+        {
+            return Ok(MessagePackSerializer.ConvertFromJson(documentEnvelope.JsonDocument));
+        }
+        if (Request.Headers.Accept.Contains("application/xml"))
+        {
+            XmlDocument? doc = JsonConvert.DeserializeXmlNode(documentEnvelope.JsonDocument, deserializeRootElementName: "document");
+            return Ok(doc);
+        }
+        return Content(documentEnvelope.JsonDocument, "application/json; charset=utf-8");
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Post()
+    async Task<(List<SchemaValidationEventArgs>, Document? document, string jsonDocument)> TryDeserializeDocumentFromRequestBody()
     {
         JSchemaGenerator generator = new JSchemaGenerator();
 
@@ -59,17 +65,57 @@ public class DocumentsController : ControllerBase
         JsonSerializer serializer = new JsonSerializer();
         var document = serializer.Deserialize<Document>(validatingReader);
 
+        return (errors, document, jsonDocument);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Post()
+    {
+        var (errors, document, jsonDocument) = await TryDeserializeDocumentFromRequestBody();
+
         if (errors.Any())
         {
-            return BadRequest(errors.Select(err => new { err.Path, err.Message }));
+            return BadRequest(new { Errors = errors.Select(err => new { err.Path, err.Message }) });
         }
 
-        if (_documents.TryAdd(document.id, new DocumentEnvelope(document, jsonDocument)))
+        if (document is null)
         {
-            Response.StatusCode = StatusCodes.Status201Created;
-            return Created();
+            return Problem();
         }
 
-        throw new InvalidOperationException();
+        if (await _documentRepository.DocumentAlreadyExists(document.id))
+        {
+            return Conflict("Document with same ID already exists");
+        }
+
+        await _documentRepository.CreateDocument(new DocumentEnvelope(document, jsonDocument));
+
+        Response.StatusCode = StatusCodes.Status201Created;
+        return Created();
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> Put()
+    {
+        var (errors, document, jsonDocument) = await TryDeserializeDocumentFromRequestBody();
+
+        if (errors.Any())
+        {
+            return BadRequest(new { Errors = errors.Select(err => new { err.Path, err.Message }) });
+        }
+
+        if (document is null)
+        {
+            return Problem();
+        }
+
+        if (!await _documentRepository.DocumentAlreadyExists(document.id))
+        {
+            return NotFound();
+        }
+
+        await _documentRepository.UpdateDocument(new DocumentEnvelope(document, jsonDocument));
+
+        return Ok();
     }
 }

@@ -1,5 +1,6 @@
 using MessagePack.AspNetCoreMvcFormatter;
 using Serilog;
+using WebApi.Features.Documents.Persistence;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
@@ -7,6 +8,8 @@ builder.Host.UseSerilog((context, config) =>
 {
     config.ReadFrom.Configuration(context.Configuration);
 });
+
+builder.Services.AddScoped<IDocumentRepository, DocumentRepositoryInMemory>();
 
 builder.Services.AddControllers(options =>
 {
