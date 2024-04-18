@@ -9,7 +9,7 @@ builder.Host.UseSerilog((context, config) =>
     config.ReadFrom.Configuration(context.Configuration);
 });
 
-builder.Services.AddScoped<IDocumentRepository, DocumentRepositoryInMemory>();
+builder.Services.AddScoped<IDocumentRepository, DocumentRepositoryFileSystem>();
 
 builder.Services.AddControllers(options =>
 {

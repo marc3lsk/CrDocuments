@@ -26,21 +26,26 @@ public class DocumentsController : ControllerBase
     [Route("{id}")]
     public async Task<IActionResult> Get(string id)
     {
-        var documentEnvelope = await _documentRepository.GetDocument(id);
-
-        if (documentEnvelope is null)
+        if (!await _documentRepository.DocumentAlreadyExists(id))
+        {
             return NotFound();
+        }
+
+        var rawJsonDocument = await _documentRepository.GetRawJsonDocument(id);
+
+        if (rawJsonDocument is null)
+            return Problem("Failed to retrieve Document");
 
         if (Request.Headers.Accept.Contains("application/x-msgpack"))
         {
-            return Ok(MessagePackSerializer.ConvertFromJson(documentEnvelope.RawJsonDocument));
+            return Ok(MessagePackSerializer.ConvertFromJson(rawJsonDocument));
         }
         if (Request.Headers.Accept.Contains("application/xml"))
         {
-            XmlDocument? doc = JsonConvert.DeserializeXmlNode(documentEnvelope.RawJsonDocument, deserializeRootElementName: "document");
+            XmlDocument? doc = JsonConvert.DeserializeXmlNode(rawJsonDocument, deserializeRootElementName: "document");
             return Ok(doc);
         }
-        return Content(documentEnvelope.RawJsonDocument, "application/json; charset=utf-8");
+        return Content(rawJsonDocument, "application/json; charset=utf-8");
     }
 
     async Task<(List<SchemaValidationEventArgs>, DocumentMeta? documentMeta, string rawJsonDocument)> TryDeserializeAndValidateDocumentFromRequestBody()

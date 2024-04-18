@@ -18,9 +18,9 @@ public class DocumentRepositoryInMemory : IDocumentRepository
         return Task.FromResult(_documents.ContainsKey(documentId));
     }
 
-    public Task<DocumentEnvelope?> GetDocument(string documentId)
+    public Task<string?> GetRawJsonDocument(string documentId)
     {
-        return Task.FromResult(_documents.TryGetValue(documentId, out var documentEnvelope) ? documentEnvelope : null);
+        return Task.FromResult(_documents.TryGetValue(documentId, out var documentEnvelope) ? documentEnvelope.RawJsonDocument : null);
     }
 
     public Task UpdateDocument(DocumentEnvelope documentEnvelope)

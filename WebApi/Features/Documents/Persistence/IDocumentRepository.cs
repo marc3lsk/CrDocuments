@@ -10,5 +10,5 @@ public interface IDocumentRepository
 
     Task UpdateDocument(DocumentEnvelope documentEnvelope);
 
-    Task<DocumentEnvelope?> GetDocument(string documentId);
+    Task<string?> GetRawJsonDocument(string documentId);
 }
