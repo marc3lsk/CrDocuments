@@ -8,9 +8,9 @@ public class DocumentRepositoryFileSystem : IDocumentRepository
 {
     const string STORAGE_PATH = @"c:/temp/documents";
 
-    static string DocumentPath(string documentId) => Path.Combine(STORAGE_PATH, ToValidFileName(documentId));
+    static string DocumentPath(string documentId) => Path.Combine(STORAGE_PATH, ToValidUniqueFileName(documentId));
 
-    static string ToValidFileName(string input)
+    static string ToValidUniqueFileName(string input)
     {
         // Compute hash
         byte[] bytes = Encoding.UTF8.GetBytes(input);
@@ -22,10 +22,7 @@ public class DocumentRepositoryFileSystem : IDocumentRepository
 
         // Convert hash to a valid file name (hexadecimal representation)
         StringBuilder sb = new StringBuilder();
-        foreach (byte b in hashBytes)
-        {
-            sb.Append(b.ToString("x2")); // Convert byte to two-digit hexadecimal representation
-        }
+        sb.AppendJoin("", hashBytes.Select(x => x.ToString("x2") /* Convert byte to two-digit hexadecimal representation */));
         return sb.ToString();
     }
 
