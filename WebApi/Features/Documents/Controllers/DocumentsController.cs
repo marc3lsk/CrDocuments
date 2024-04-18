@@ -33,29 +33,29 @@ public class DocumentsController : ControllerBase
 
         if (Request.Headers.Accept.Contains("application/x-msgpack"))
         {
-            return Ok(MessagePackSerializer.ConvertFromJson(documentEnvelope.JsonDocument));
+            return Ok(MessagePackSerializer.ConvertFromJson(documentEnvelope.RawJsonDocument));
         }
         if (Request.Headers.Accept.Contains("application/xml"))
         {
-            XmlDocument? doc = JsonConvert.DeserializeXmlNode(documentEnvelope.JsonDocument, deserializeRootElementName: "document");
+            XmlDocument? doc = JsonConvert.DeserializeXmlNode(documentEnvelope.RawJsonDocument, deserializeRootElementName: "document");
             return Ok(doc);
         }
-        return Content(documentEnvelope.JsonDocument, "application/json; charset=utf-8");
+        return Content(documentEnvelope.RawJsonDocument, "application/json; charset=utf-8");
     }
 
-    async Task<(List<SchemaValidationEventArgs>, Document? document, string jsonDocument)> TryDeserializeDocumentFromRequestBody()
+    async Task<(List<SchemaValidationEventArgs>, DocumentMeta? documentMeta, string rawJsonDocument)> TryDeserializeAndValidateDocumentFromRequestBody()
     {
         JSchemaGenerator generator = new JSchemaGenerator();
 
-        JSchema schema = generator.Generate(typeof(Document));
+        JSchema schema = generator.Generate(typeof(DocumentSchema));
 
         schema.AllowAdditionalProperties = false;
 
         using var bodyReader = new StreamReader(Request.Body);
 
-        var jsonDocument = await bodyReader.ReadToEndAsync();
+        var rawJsonDocument = await bodyReader.ReadToEndAsync();
 
-        JsonTextReader jsonReader = new JsonTextReader(new StringReader(jsonDocument));
+        JsonTextReader jsonReader = new JsonTextReader(new StringReader(rawJsonDocument));
 
         JSchemaValidatingReader validatingReader = new JSchemaValidatingReader(jsonReader);
         validatingReader.Schema = schema;
@@ -63,32 +63,32 @@ public class DocumentsController : ControllerBase
         var errors = new List<SchemaValidationEventArgs>();
         validatingReader.ValidationEventHandler += (o, a) => errors.Add(a);
         JsonSerializer serializer = new JsonSerializer();
-        var document = serializer.Deserialize<Document>(validatingReader);
+        var documentMeta = serializer.Deserialize<DocumentMeta>(validatingReader);
 
-        return (errors, document, jsonDocument);
+        return (errors, documentMeta, rawJsonDocument);
     }
 
     [HttpPost]
     public async Task<IActionResult> Post()
     {
-        var (errors, document, jsonDocument) = await TryDeserializeDocumentFromRequestBody();
+        var (errors, documentMeta, rawJsonDocument) = await TryDeserializeAndValidateDocumentFromRequestBody();
 
         if (errors.Any())
         {
             return BadRequest(new { Errors = errors.Select(err => new { err.Path, err.Message }) });
         }
 
-        if (document is null)
+        if (documentMeta is null)
         {
             return Problem();
         }
 
-        if (await _documentRepository.DocumentAlreadyExists(document.id))
+        if (await _documentRepository.DocumentAlreadyExists(documentMeta.id))
         {
             return Conflict("Document with same ID already exists");
         }
 
-        await _documentRepository.CreateDocument(new DocumentEnvelope(document, jsonDocument));
+        await _documentRepository.CreateDocument(new DocumentEnvelope(documentMeta, rawJsonDocument));
 
         Response.StatusCode = StatusCodes.Status201Created;
         return Created();
@@ -97,24 +97,24 @@ public class DocumentsController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> Put()
     {
-        var (errors, document, jsonDocument) = await TryDeserializeDocumentFromRequestBody();
+        var (errors, documentMeta, rawJsonDocument) = await TryDeserializeAndValidateDocumentFromRequestBody();
 
         if (errors.Any())
         {
             return BadRequest(new { Errors = errors.Select(err => new { err.Path, err.Message }) });
         }
 
-        if (document is null)
+        if (documentMeta is null)
         {
             return Problem();
         }
 
-        if (!await _documentRepository.DocumentAlreadyExists(document.id))
+        if (!await _documentRepository.DocumentAlreadyExists(documentMeta.id))
         {
             return NotFound();
         }
 
-        await _documentRepository.UpdateDocument(new DocumentEnvelope(document, jsonDocument));
+        await _documentRepository.UpdateDocument(new DocumentEnvelope(documentMeta, rawJsonDocument));
 
         return Ok();
     }

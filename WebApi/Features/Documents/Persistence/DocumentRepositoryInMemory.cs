@@ -9,7 +9,7 @@ public class DocumentRepositoryInMemory : IDocumentRepository
 
     public Task CreateDocument(DocumentEnvelope documentEnvelope)
     {
-        _documents[documentEnvelope.Document.id] = documentEnvelope;
+        _documents[documentEnvelope.DocumentMeta.id] = documentEnvelope;
         return Task.CompletedTask;
     }
 
@@ -25,7 +25,7 @@ public class DocumentRepositoryInMemory : IDocumentRepository
 
     public Task UpdateDocument(DocumentEnvelope documentEnvelope)
     {
-        _documents[documentEnvelope.Document.id] = documentEnvelope;
+        _documents[documentEnvelope.DocumentMeta.id] = documentEnvelope;
         return Task.CompletedTask;
     }
 }

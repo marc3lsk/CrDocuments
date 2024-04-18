@@ -17,8 +17,8 @@ public class DocumentXmlOutputFormatter : TextOutputFormatter
         SupportedEncodings.Add(Encoding.Unicode);
     }
     protected override bool CanWriteType(Type? type)
-        => typeof(Document).IsAssignableFrom(type)
-            || typeof(IEnumerable<Document>).IsAssignableFrom(type);
+        => typeof(DocumentSchema).IsAssignableFrom(type)
+            || typeof(IEnumerable<DocumentSchema>).IsAssignableFrom(type);
 
     public override async Task WriteResponseBodyAsync(
         OutputFormatterWriteContext context, Encoding selectedEncoding)
