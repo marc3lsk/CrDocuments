@@ -9,7 +9,7 @@ builder.Host.UseSerilog((context, config) =>
     config.ReadFrom.Configuration(context.Configuration);
 });
 
-builder.Services.AddScoped<IDocumentRepository, DocumentRepositoryFileSystem>();
+builder.Services.AddScoped<IDocumentRepository, DocumentRepositoryGoogleFirestore>();
 
 builder.Services.AddControllers(options =>
 {
