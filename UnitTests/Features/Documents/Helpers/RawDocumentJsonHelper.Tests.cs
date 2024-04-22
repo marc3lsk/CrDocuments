@@ -1,15 +1,10 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebApi.Features.Documents.Models;
-using WebApi.Features.Documents.Validation;
+using WebApi.Features.Documents.Helpers;
 
-namespace UnitTests.Features.Documents.Validation;
+namespace UnitTests.Features.Documents.Helpers;
 
-public class DocumentSchemaValidationTests
+public class RawDocumentJsonHelperTests
 {
     [Fact]
     public void ValidDocument()
@@ -20,7 +15,7 @@ public class DocumentSchemaValidationTests
             tags: ["1", "2", "3"],
             data: new { something = "cool" }
         );
-        var (errors, _) = DocumentSchemaValidation.TryDeserializeAndValidateDocument(JsonConvert.SerializeObject(validDocument));
+        var (errors, _) = RawDocumentJsonHelper.TryDeserializeAndValidateDocument(JsonConvert.SerializeObject(validDocument));
 
         Assert.Empty(errors);
     }
@@ -33,7 +28,7 @@ public class DocumentSchemaValidationTests
             tags = (string[])["1", "2", "3"],
             data = new { something = "cool" }
         };
-        var (errors, _) = DocumentSchemaValidation.TryDeserializeAndValidateDocument(JsonConvert.SerializeObject(invalidDocument));
+        var (errors, _) = RawDocumentJsonHelper.TryDeserializeAndValidateDocument(JsonConvert.SerializeObject(invalidDocument));
 
         Assert.NotEmpty(errors);
     }

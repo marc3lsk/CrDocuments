@@ -5,7 +5,7 @@ using Newtonsoft.Json.Schema;
 using System.Xml;
 using WebApi.Features.Documents.Models;
 using WebApi.Features.Documents.Persistence;
-using WebApi.Features.Documents.Validation;
+using WebApi.Features.Documents.Helpers;
 
 namespace WebApi.Features.Documents.Controllers;
 
@@ -55,7 +55,7 @@ public class DocumentsController : ControllerBase
 
         var rawJsonDocument = await bodyReader.ReadToEndAsync();
 
-        var (errors, documentMeta) = DocumentSchemaValidation.TryDeserializeAndValidateDocument(rawJsonDocument);
+        var (errors, documentMeta) = RawDocumentJsonHelper.TryDeserializeAndValidateDocument(rawJsonDocument);
 
         return (errors, documentMeta, rawJsonDocument);
     }

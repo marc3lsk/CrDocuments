@@ -20,8 +20,10 @@ public class DocumentsControllerTests : IClassFixture<CustomWebApplicationFactor
     {
         var client = _factory.CreateClient();
 
+        var id = Guid.NewGuid().ToString();
+
         var validDocument = new DocumentSchema(
-            id: "1",
+            id: id,
             tags: ["1"],
             data: "1"
         );

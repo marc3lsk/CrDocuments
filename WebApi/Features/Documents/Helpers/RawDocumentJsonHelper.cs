@@ -3,9 +3,9 @@ using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Schema.Generation;
 using WebApi.Features.Documents.Models;
 
-namespace WebApi.Features.Documents.Validation;
+namespace WebApi.Features.Documents.Helpers;
 
-public class DocumentSchemaValidation
+public class RawDocumentJsonHelper
 {
     public static (List<SchemaValidationEventArgs>, DocumentMeta? documentMeta) TryDeserializeAndValidateDocument(string rawJsonDocument)
     {
