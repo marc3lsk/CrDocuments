@@ -10,6 +10,8 @@ public class CustomWebApplicationFactory<TProgram> :
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "./Keys/crdocuments-9daeb-e950b0ead9ab.json");
+
         builder.ConfigureServices(services =>
         {
             // Remove existing service registration
@@ -22,7 +24,7 @@ public class CustomWebApplicationFactory<TProgram> :
             }
 
             // Add the new implementation of the service
-            services.AddScoped<IDocumentRepository, DocumentRepositoryInMemory>();
+            services.AddScoped<IDocumentRepository, DocumentRepositoryGoogleFirestore>();
         });
 
         builder.UseEnvironment("Development");

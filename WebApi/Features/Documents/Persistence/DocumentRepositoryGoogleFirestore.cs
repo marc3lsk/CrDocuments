@@ -13,7 +13,8 @@ public class DocumentRepositoryGoogleFirestore : IDocumentRepository
     {
         DocumentReference docRef = Documents.Document(documentEnvelope.DocumentMeta.id);
 
-        await docRef.SetAsync(JsonConvert.DeserializeObject<ExpandoObject>(documentEnvelope.RawJsonDocument));
+        //await docRef.SetAsync(documentEnvelope);
+        await docRef.SetAsync(new { documentEnvelope.DocumentMeta.id, documentEnvelope.DocumentMeta.tags, documentEnvelope.RawJsonDocument });
     }
 
     public async Task<bool> DocumentAlreadyExists(string documentId)
@@ -31,13 +32,15 @@ public class DocumentRepositoryGoogleFirestore : IDocumentRepository
 
         DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
 
-        return JsonConvert.SerializeObject(snapshot.ToDictionary());
+        var values = snapshot.ToDictionary();
+
+        return values.TryGetValue(nameof(DocumentEnvelope.RawJsonDocument), out var rawDocumentJson) ? rawDocumentJson as string : null;
     }
 
     public async Task UpdateDocument(DocumentEnvelope documentEnvelope)
     {
         DocumentReference docRef = Documents.Document(documentEnvelope.DocumentMeta.id);
 
-        await docRef.SetAsync(JsonConvert.DeserializeObject<ExpandoObject>(documentEnvelope.RawJsonDocument));
+        await docRef.SetAsync(new { documentEnvelope.DocumentMeta.id, documentEnvelope.DocumentMeta.tags, documentEnvelope.RawJsonDocument });
     }
 }
