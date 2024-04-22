@@ -1,6 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using MessagePack;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Schema.Generation;
+using System.Xml;
 using WebApi.Features.Documents.Models;
 
 namespace WebApi.Features.Documents.Helpers;
@@ -26,5 +28,15 @@ public class RawDocumentJsonHelper
         var documentMeta = serializer.Deserialize<DocumentMeta>(validatingReader);
 
         return (errors, documentMeta);
+    }
+
+    public static byte[] ConvertToMsgPack(string rawJsonDocument)
+    {
+        return MessagePackSerializer.ConvertFromJson(rawJsonDocument);
+    }
+
+    public static XmlDocument? ConvertToXml(string rawJsonDocument)
+    {
+        return JsonConvert.DeserializeXmlNode(rawJsonDocument, deserializeRootElementName: "document");
     }
 }

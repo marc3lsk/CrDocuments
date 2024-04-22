@@ -38,13 +38,12 @@ public class DocumentsController : ControllerBase
 
         if (Request.Headers.Accept.Contains("application/x-msgpack"))
         {
-            var rawDocumentBytes = MessagePackSerializer.ConvertFromJson(rawJsonDocument);
+            var rawDocumentBytes = RawDocumentJsonHelper.ConvertToMsgPack(rawJsonDocument);
             return File(rawDocumentBytes, "application/x-msgpack");
         }
         if (Request.Headers.Accept.Contains("application/xml"))
         {
-            XmlDocument? doc = JsonConvert.DeserializeXmlNode(rawJsonDocument, deserializeRootElementName: "document");
-            return Ok(doc);
+            return Ok(RawDocumentJsonHelper.ConvertToXml(rawJsonDocument));
         }
         return Content(rawJsonDocument, "application/json; charset=utf-8");
     }
