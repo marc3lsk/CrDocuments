@@ -1,8 +1,5 @@
-﻿using MessagePack;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Schema;
-using System.Xml;
 using WebApi.Features.Documents.Models;
 using WebApi.Features.Documents.Persistence;
 using WebApi.Features.Documents.Helpers;
@@ -36,16 +33,7 @@ public class DocumentsController : ControllerBase
         if (rawJsonDocument is null)
             return Problem("Failed to retrieve Document");
 
-        if (Request.Headers.Accept.Contains("application/x-msgpack"))
-        {
-            var rawDocumentBytes = RawDocumentJsonHelper.ConvertToMsgPack(rawJsonDocument);
-            return File(rawDocumentBytes, "application/x-msgpack");
-        }
-        if (Request.Headers.Accept.Contains("application/xml"))
-        {
-            return Ok(RawDocumentJsonHelper.ConvertToXml(rawJsonDocument));
-        }
-        return Content(rawJsonDocument, "application/json; charset=utf-8");
+        return Ok(new RawDocumentJson(rawJsonDocument));
     }
 
     async Task<(List<SchemaValidationEventArgs>, DocumentMeta? documentMeta, string rawJsonDocument)> TryDeserializeAndValidateDocumentFromRequestBody()

@@ -1,6 +1,6 @@
-using MessagePack.AspNetCoreMvcFormatter;
 using Serilog;
 using WebApi.Features.Documents.Persistence;
+using WebApi.Features.Documents.ResponseFormatters;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
@@ -13,11 +13,8 @@ builder.Services.AddScoped<IDocumentRepository, DocumentRepositoryFileSystem>();
 
 builder.Services.AddControllers(options =>
 {
-    options.OutputFormatters.Add(new MessagePackOutputFormatter());
-    //options.OutputFormatters.Add(new DocumentXmlOutputFormatter());
-})
-    .AddXmlSerializerFormatters()
-    .AddXmlDataContractSerializerFormatters();
+    options.OutputFormatters.Insert(0, new RawDocumentJsonOutputFormatter()); // position 0 to override default json formatter
+});
 
 var app = builder.Build();
 

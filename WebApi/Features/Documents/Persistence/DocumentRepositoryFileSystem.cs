@@ -6,7 +6,7 @@ namespace WebApi.Features.Documents.Persistence;
 
 public class DocumentRepositoryFileSystem : IDocumentRepository
 {
-    const string STORAGE_PATH = @"c:/temp/documents";
+    const string STORAGE_PATH = @"c:/temp/crdocuments";
 
     static string DocumentPath(string documentId) => Path.Combine(STORAGE_PATH, ToValidUniqueFileName(documentId));
 
