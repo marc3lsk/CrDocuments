@@ -10,7 +10,7 @@ public class CustomWebApplicationFactory<TProgram> :
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "./Keys/crdocuments-9daeb-e950b0ead9ab.json");
+        Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "./Keys/google-firestore-crdocuments-developer.json");
 
         builder.ConfigureServices(services =>
         {

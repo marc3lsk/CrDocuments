@@ -9,7 +9,7 @@
             "applicationUrl": "http://localhost:5164",
             "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
-                "GOOGLE_APPLICATION_CREDENTIALS": "./Keys/crdocuments-9daeb-e950b0ead9ab.json"
+                "GOOGLE_APPLICATION_CREDENTIALS": "./Keys/google-firestore-crdocuments-developer.json"
             }
         }
     }

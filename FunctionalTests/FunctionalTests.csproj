@@ -10,11 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Keys\crdocuments-9daeb-e950b0ead9ab.json" />
+    <None Remove="Keys\google-firestore-crdocuments-developer.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Keys\crdocuments-9daeb-e950b0ead9ab.json">
+    <Content Include="Keys\google-firestore-crdocuments-developer.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
