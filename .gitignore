@@ -399,3 +399,5 @@ FodyWeavers.xsd
 /WebApi/Keys/crdocuments-9daeb-1abb8ba5a515.json
 /FunctionalTests/Keys/crdocuments-9daeb-e950b0ead9ab.json
 /WebApi/Keys/crdocuments-9daeb-e950b0ead9ab.json
+/FunctionalTests/Keys/google-firestore-crdocuments-developer.json
+/WebApi/Keys/google-firestore-crdocuments-developer.json

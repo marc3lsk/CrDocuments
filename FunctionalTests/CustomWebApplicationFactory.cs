@@ -24,7 +24,7 @@ public class CustomWebApplicationFactory<TProgram> :
             }
 
             // Add the new implementation of the service
-            services.AddScoped<IDocumentRepository, DocumentRepositoryGoogleFirestore>();
+            services.AddScoped<IDocumentRepository, DocumentRepositoryFileSystem>();
         });
 
         builder.UseEnvironment("Development");
