@@ -1,4 +1,6 @@
 ﻿using MessagePack;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Net.Http.Json;
 using WebApi.Features.Documents.Models;
 
@@ -74,5 +76,64 @@ public class DocumentsControllerTests : IClassFixture<CustomWebApplicationFactor
         Assert.Equal(validDocument.id, document.id);
         Assert.Equal(validDocument.tags, document.tags);
         Assert.Equal(validDocument.data, document.data);
+    }
+
+    [Fact]
+    public async Task GetXml()
+    {
+        var client = _factory.CreateClient();
+
+        var id = Guid.NewGuid().ToString();
+
+        var validDocument = new DocumentSchema
+        (
+            id: id,
+            tags: ["1", "2", "3"],
+            data: new { something = "cool" }
+        );
+
+        var response = await client.PostAsJsonAsync("/documents", validDocument);
+
+        response.EnsureSuccessStatusCode();
+
+        client.DefaultRequestHeaders.Accept.Clear();
+        client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
+
+        var xmlResponse = await client.GetAsync($"/documents/{id}");
+
+        var rawXml = await xmlResponse.Content.ReadAsStringAsync();
+
+        Assert.Equal($"<document><id>{id}</id><tags>1</tags><tags>2</tags><tags>3</tags><data><something>cool</something></data></document>", rawXml);
+    }
+
+    [Fact]
+    public async Task GetJson()
+    {
+        var client = _factory.CreateClient();
+
+        var id = Guid.NewGuid().ToString();
+
+        var validDocument = new DocumentSchema
+        (
+            id: id,
+            tags: ["1", "2", "3"],
+            data: new { something = "cool" }
+        );
+
+        var response = await client.PostAsJsonAsync("/documents", validDocument);
+
+        response.EnsureSuccessStatusCode();
+
+        client.DefaultRequestHeaders.Accept.Clear();
+        client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+        var jsonResponse = await client.GetAsync($"/documents/{id}");
+
+        var rawJson = await jsonResponse.Content.ReadAsStringAsync();
+
+        JToken referenceToken = JToken.Parse(JsonConvert.SerializeObject(validDocument));
+        JToken tokenFromResponse = JToken.Parse(rawJson);
+
+        Assert.True(JToken.DeepEquals(referenceToken, tokenFromResponse));
     }
 }

@@ -32,4 +32,18 @@ public class RawDocumentJsonHelperTests
 
         Assert.NotEmpty(errors);
     }
+
+    [Fact]
+    public void Xml()
+    {
+        var validDocument = new DocumentSchema
+        (
+            id: "123",
+            tags: ["1", "2", "3"],
+            data: new { something = "cool" }
+        );
+        var doc = RawDocumentJsonHelper.ConvertToXml(JsonConvert.SerializeObject(validDocument));
+
+        Assert.Equal("<document><id>123</id><tags>1</tags><tags>2</tags><tags>3</tags><data><something>cool</something></data></document>", doc!.OuterXml);
+    }
 }
